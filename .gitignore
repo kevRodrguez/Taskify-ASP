@@ -1,0 +1,84 @@
+# ASP.NET Core
+bin/
+obj/
+*.runtimeconfig.json
+*.runtimeconfig.dev.json
+
+# Visual Studio
+.vs/
+.vscode/
+*.user
+*.suo
+*.sln.docstates
+.vs
+
+# JetBrains IDEs (Rider, IntelliJ)
+.idea/
+*.iml
+*.iws
+*.ipr
+*.DotSettings
+*.DotSettings.user
+.rider/
+
+# ReSharper
+_ReSharper*/
+*.resharper
+
+# NuGet
+.nuget/
+*.nupkg
+*.snupkg
+packages/
+
+# Node.js (if using npm)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs/
+*.log
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# Application settings (local overrides)
+appsettings.Development.json.local
+appsettings.local.json
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+
+# Build outputs
+dist/
+build/
+
+# Coverage reports
+coverage/
+*.coverage
+
+# IDE temporary files
+.vscode/launch.json
+.vscode/tasks.json
+
+# Publish
+PublishProfiles/

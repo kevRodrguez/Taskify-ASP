@@ -1,14 +1,27 @@
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Supabase;
 using Taskify.Auth;
 using Taskify.Configuration;
+using Taskify.Data;
 using Taskify.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
+
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+if (string.IsNullOrWhiteSpace(connectionString))
+{
+    throw new InvalidOperationException(
+        "Falta la cadena de conexión. Configura ConnectionStrings:DefaultConnection " +
+        "con dotnet user-secrets en desarrollo, o con variables de entorno en producción.");
+}
+
+builder.Services.AddDbContext<TaskifyDbContext>(options =>
+    options.UseNpgsql(connectionString));
 
 builder.Services.Configure<SupabaseSettings>(
     builder.Configuration.GetSection(SupabaseSettings.SectionName));

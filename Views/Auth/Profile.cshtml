@@ -1,0 +1,30 @@
+@using System.Security.Claims
+@using Taskify.Auth
+@{
+    ViewData["Title"] = "Mi perfil";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <h1 class="h4 mb-4">Mi perfil</h1>
+
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">Nombre</dt>
+                    <dd class="col-sm-8">@(User.FindFirstValue(TaskifyClaimTypes.FullName) ?? "Sin definir")</dd>
+
+                    <dt class="col-sm-4">Correo</dt>
+                    <dd class="col-sm-8">@User.FindFirstValue(ClaimTypes.Email)</dd>
+
+                    <dt class="col-sm-4">ID de usuario</dt>
+                    <dd class="col-sm-8"><code>@User.FindFirstValue(ClaimTypes.NameIdentifier)</code></dd>
+                </dl>
+
+                <hr class="my-4"/>
+
+                <a asp-action="ResetPassword" class="btn btn-outline-secondary btn-sm">Cambiar contraseña</a>
+            </div>
+        </div>
+    </div>
+</div>

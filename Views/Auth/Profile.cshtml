@@ -4,27 +4,24 @@
     ViewData["Title"] = "Mi perfil";
 }
 
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card shadow-sm">
-            <div class="card-body p-4">
-                <h1 class="h4 mb-4">Mi perfil</h1>
+<div class="auth-page">
+    <div class="content-card" style="max-width: var(--auth-card-max); width: 100%;">
+        <p class="brand-eyebrow mb-2">Cuenta</p>
+        <h1 class="content-card__title">Mi perfil</h1>
 
-                <dl class="row mb-0">
-                    <dt class="col-sm-4">Nombre</dt>
-                    <dd class="col-sm-8">@(User.FindFirstValue(TaskifyClaimTypes.FullName) ?? "Sin definir")</dd>
+        <dl class="row mb-0">
+            <dt class="col-sm-4">Nombre</dt>
+            <dd class="col-sm-8">@(User.FindFirstValue(TaskifyClaimTypes.FullName) ?? "Sin definir")</dd>
 
-                    <dt class="col-sm-4">Correo</dt>
-                    <dd class="col-sm-8">@User.FindFirstValue(ClaimTypes.Email)</dd>
+            <dt class="col-sm-4">Correo</dt>
+            <dd class="col-sm-8">@User.FindFirstValue(ClaimTypes.Email)</dd>
 
-                    <dt class="col-sm-4">ID de usuario</dt>
-                    <dd class="col-sm-8"><code>@User.FindFirstValue(ClaimTypes.NameIdentifier)</code></dd>
-                </dl>
+            <dt class="col-sm-4">ID de usuario</dt>
+            <dd class="col-sm-8"><code>@User.FindFirstValue(ClaimTypes.NameIdentifier)</code></dd>
+        </dl>
 
-                <hr class="my-4"/>
+        <hr class="my-4"/>
 
-                <a asp-action="ResetPassword" class="btn btn-outline-secondary btn-sm">Cambiar contraseña</a>
-            </div>
-        </div>
+        <a asp-action="ResetPassword" class="btn-brand-secondary btn-sm">Cambiar contraseña</a>
     </div>
 </div>

@@ -1,8 +1,59 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Inicio";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<section class="brand-hero">
+    <div class="row align-items-center">
+        <div class="col-lg-7">
+            <p class="brand-eyebrow">Gestión de proyectos</p>
+            <h1 class="brand-hero__title">Organiza equipos, proyectos y tareas en un solo lugar.</h1>
+            <p class="brand-hero__lead">
+                Taskify centraliza la colaboración de tu equipo con tableros Kanban,
+                asignaciones claras y notificaciones en tiempo real.
+            </p>
+            <div class="d-flex flex-wrap gap-3">
+                @if (User.Identity?.IsAuthenticated ?? false)
+                {
+                    <a asp-controller="Auth" asp-action="Profile" class="btn-brand-primary">
+                        Ir a mi perfil
+                        <span aria-hidden="true">↗</span>
+                    </a>
+                }
+                else
+                {
+                    <a asp-controller="Auth" asp-action="Register" class="btn-brand-primary">
+                        Empezar gratis
+                        <span aria-hidden="true">↗</span>
+                    </a>
+                    <a asp-controller="Auth" asp-action="Login" class="btn-brand-secondary">
+                        Iniciar sesión
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="brand-stats-row">
+        <p class="brand-eyebrow mb-3">Por qué Taskify</p>
+        <div class="row g-4">
+            <div class="col-sm-4">
+                <div class="brand-stat">
+                    <div class="brand-stat__value">Kanban</div>
+                    <div class="brand-stat__label">Visualiza tareas por estado</div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="brand-stat">
+                    <div class="brand-stat__value">Equipos</div>
+                    <div class="brand-stat__label">Colaboración multidisciplinaria</div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="brand-stat">
+                    <div class="brand-stat__value">Tiempo real</div>
+                    <div class="brand-stat__label">Notificaciones instantáneas</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

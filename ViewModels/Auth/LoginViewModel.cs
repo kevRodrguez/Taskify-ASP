@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Taskify.Models.Auth;
+namespace Taskify.ViewModels.Auth;
 
 public class LoginViewModel
 {

@@ -1,4 +1,4 @@
-namespace Taskify.Models;
+namespace Taskify.ViewModels;
 
 public class ErrorViewModel
 {

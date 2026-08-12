@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Taskify.Models.Auth;
+using Taskify.ViewModels.Auth;
 using Taskify.Services;
 using static Supabase.Gotrue.Constants;
 

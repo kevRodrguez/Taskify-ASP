@@ -19,6 +19,8 @@ public class TaskItemConfiguration : IEntityTypeConfiguration<TaskItem>
         builder.Property(t => t.Description)
             .HasMaxLength(2000);
 
+        builder.HasQueryFilter(t => t.DeletedAt == null);
+
         builder.HasOne(t => t.Project)
             .WithMany(p => p.Tasks)
             .HasForeignKey(t => t.ProjectId)

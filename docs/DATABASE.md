@@ -43,6 +43,19 @@ dotnet ef migrations remove
 - Enums en `Models/Enums/`
 - Configuración Fluent API en `Data/Configurations/` (relaciones, longitudes, índices)
 
+## Borrado de datos
+
+| Entidad | Estrategia |
+| --- | --- |
+| `Profiles` | Hard delete (vía cascade desde `auth.users`) |
+| `TeamMembers` | Hard delete (salir del equipo) |
+| `Notifications` | Hard delete |
+| `Teams` | **Soft delete** — `DeletedAt` (`null` = activo) |
+| `TaskItems` | **Soft delete** — `DeletedAt` (`null` = activo) |
+| `Projects` | Sin soft delete — usar `Status = Archived` |
+
+Soft delete: al borrar se asigna `DeletedAt = UtcNow`; restaurar = volver a `null`. EF filtra con `HasQueryFilter(e => e.DeletedAt == null)`.
+
 ## Enums
 
 | Enum | Valores |

@@ -12,6 +12,8 @@ public class Team
 
     public DateTimeOffset CreatedAt { get; set; }
 
+    public DateTimeOffset? DeletedAt { get; set; }
+
     public Profile Creator { get; set; } = null!;
 
     public ICollection<TeamMember> Members { get; set; } = [];

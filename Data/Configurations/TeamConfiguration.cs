@@ -19,6 +19,8 @@ public class TeamConfiguration : IEntityTypeConfiguration<Team>
         builder.Property(t => t.Description)
             .HasMaxLength(500);
 
+        builder.HasQueryFilter(t => t.DeletedAt == null);
+
         builder.HasOne(t => t.Creator)
             .WithMany(p => p.TeamsCreated)
             .HasForeignKey(t => t.CreatedBy)

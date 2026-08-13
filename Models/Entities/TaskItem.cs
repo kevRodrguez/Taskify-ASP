@@ -24,6 +24,8 @@ public class TaskItem
 
     public DateTimeOffset UpdatedAt { get; set; }
 
+    public DateTimeOffset? DeletedAt { get; set; }
+
     public Project Project { get; set; } = null!;
 
     public Profile? AssignedTo { get; set; }

@@ -19,6 +19,12 @@ public class ProfileConfiguration : IEntityTypeConfiguration<Profile>
         builder.Property(p => p.Email)
             .HasMaxLength(256);
 
+        builder.HasOne(p => p.AuthUser)
+            .WithOne(u => u.Profile)
+            .HasForeignKey<Profile>(p => p.UserId)
+            .HasPrincipalKey<AuthUser>(u => u.Id)
+            .OnDelete(DeleteBehavior.Cascade);
+
         builder.HasIndex(p => p.UserId).IsUnique();
         builder.HasIndex(p => p.Email).IsUnique();
     }

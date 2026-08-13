@@ -10,6 +10,8 @@ public class TaskifyDbContext : DbContext
     {
     }
 
+    public DbSet<AuthUser> AuthUsers => Set<AuthUser>();
+
     public DbSet<Profile> Profiles => Set<Profile>();
 
     public DbSet<Team> Teams => Set<Team>();

@@ -6,7 +6,7 @@
 
 | Tabla | Descripción |
 | --- | --- |
-| `Profiles` | Perfiles enlazados a `auth.users` vía `UserId` |
+| `Profiles` | Perfiles enlazados a `auth.users` vía FK en `UserId` |
 | `Teams` | Equipos de trabajo |
 | `TeamMembers` | M:N perfil ↔ equipo (roles: Owner, Admin, Member) |
 | `Projects` | Proyectos por equipo |

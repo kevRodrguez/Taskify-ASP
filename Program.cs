@@ -68,6 +68,7 @@ builder.Services.AddScoped<IProfileService, ProfileService>();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<ITeamAccessService, TeamAccessService>();
 builder.Services.AddScoped<ITeamService, TeamService>();
+builder.Services.AddScoped<IProjectService, ProjectService>();
 
 builder.Services
     .AddAuthentication(SupabaseAuthenticationDefaults.Scheme)

@@ -1,0 +1,13 @@
+@model TaskCardViewModel
+<article class="kanban-card" data-task-id="@Model.TaskItemId">
+    <h3 class="kanban-card__title">@Model.Title</h3>
+    @if (!string.IsNullOrEmpty(Model.AssignedToName))
+    {
+        <p class="kanban-card__meta assigned">@Model.AssignedToName</p>
+    }
+    @if (Model.DueDate is { } due)
+    {
+        <p class="kanban-card__meta due">Vence @due.ToString("dd/MM/yyyy")</p>
+    }
+    <a class="brand-link small edit-link" asp-action="Edit" asp-route-id="@Model.TaskItemId">Editar</a>
+</article>

@@ -5,42 +5,58 @@ recuperación de contraseña y sesiones persistentes.
 
 ## Requisitos
 
-- SDK de .NET 10
+- SDK de [.NET 10](https://dotnet.microsoft.com/download)
+- Herramienta EF Core (una vez por máquina): `dotnet tool install --global dotnet-ef`
 - Un proyecto en [Supabase](https://supabase.com/dashboard)
 
-## Puesta en marcha
+## Levantar el proyecto (desarrollo local)
 
-### 1. Credenciales
+Sigue estos pasos en orden desde la raíz del repositorio.
 
-Las credenciales nunca se guardan en el repositorio. En desarrollo se usan los
-[user secrets](https://learn.microsoft.com/aspnet/core/security/app-secrets) del SDK, que
-se almacenan fuera del proyecto:
+### Paso 1 — Entrar al proyecto y restaurar paquetes
+
+```bash
+cd Taskify-ASP
+dotnet restore
+dotnet build
+```
+
+### Paso 2 — Configurar user secrets
+
+Las credenciales **no** van en el repo. El `UserSecretsId` ya está en `Taskify.csproj`; no hace falta
+`dotnet user-secrets init`.
 
 ```bash
 dotnet user-secrets set "Supabase:Url" "https://TU-PROYECTO.supabase.co"
 dotnet user-secrets set "Supabase:AnonKey" "TU-ANON-KEY"
+dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Host=TU-HOST.pooler.supabase.com;Port=5432;Database=postgres;Username=postgres.TU-PROJECT-REF;Password=TU-PASSWORD;SSL Mode=Require;Trust Server Certificate=true"
 ```
 
-Los dos valores están en el dashboard, en **Project Settings > API**. La clave es la pública
-(`anon` o `sb_publishable_...`), no la `service_role`. Funciona igual en Windows, macOS y Linux;
-solo cambia la ruta del archivo donde el SDK los guarda.
+| Secret | Dónde obtenerlo |
+| --- | --- |
+| `Supabase:Url` | Dashboard → **Project Settings > API** |
+| `Supabase:AnonKey` | Misma pantalla (clave `anon`, no `service_role`) |
+| `ConnectionStrings:DefaultConnection` | **Project Settings > Database** → Session pooler (puerto **5432**) |
 
-El `UserSecretsId` ya está en `Taskify.csproj`, así que al clonar el repositorio no hace falta
-ejecutar `dotnet user-secrets init`.
+Si la conexión directa a `db.*.supabase.co` falla por IPv6, usa el **session pooler**
+(`*.pooler.supabase.com`, usuario `postgres.TU-PROJECT-REF`). Evita el transaction pooler (6543).
 
-### 2. Configuración del dashboard de Supabase
+Verifica:
 
-Estos tres pasos son obligatorios: sin ellos los correos llegan con enlaces que la aplicación
-no puede procesar.
+```bash
+dotnet user-secrets list
+```
+
+### Paso 3 — Configurar Supabase (dashboard, una sola vez)
+
+Sin esto los correos de registro y recuperación no funcionan con esta app.
 
 **Authentication > URL Configuration**
 
 - `Site URL`: `https://localhost:7221`
-- En `Redirect URLs`, añadir `https://localhost:7221/**`
+- `Redirect URLs`: `https://localhost:7221/**`
 
 **Authentication > Email Templates > Confirm signup**
-
-Reemplazar el enlace del template por:
 
 ```html
 <a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=signup">Confirmar mi cuenta</a>
@@ -52,21 +68,48 @@ Reemplazar el enlace del template por:
 <a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=recovery">Restablecer mi contraseña</a>
 ```
 
-Por qué hay que cambiarlos: el template por defecto usa `{{ .ConfirmationURL }}`, que devuelve
-la sesión en el fragmento de la URL (`#access_token=...`). El navegador nunca envía el fragmento
-al servidor, así que una aplicación renderizada en servidor no puede leerlo. Con `{{ .TokenHash }}`
-el token viaja como query string y se canjea en el servidor con `Auth.VerifyTokenHash`, que es el
-enfoque que [Supabase recomienda](https://supabase.com/docs/guides/auth/passwords) para apps
-server-side.
+El template por defecto usa `{{ .ConfirmationURL }}` con el token en el fragmento de la URL (`#...`),
+que el servidor nunca recibe. Con `{{ .TokenHash }}` el enlace llega como query string y la app lo
+canjea en `/auth/confirm`.
 
-### 3. Ejecutar
+### Paso 4 — Crear / actualizar tablas en PostgreSQL
+
+Con la app **detenida** (cierra cualquier `dotnet run` previo):
+
+```bash
+dotnet ef database update
+```
+
+Crea o actualiza las tablas en Supabase según las migraciones en `Migrations/`. Esquema documentado
+en [`docs/DATABASE.md`](docs/DATABASE.md).
+
+### Paso 5 — Ejecutar la aplicación
 
 ```bash
 dotnet run
 ```
 
-La aplicación queda en `https://localhost:7221`. En macOS y Linux puede hacer falta confiar el
-certificado de desarrollo con `dotnet dev-certs https --trust`.
+Abre **https://localhost:7221** en el navegador.
+
+En macOS/Linux, si HTTPS falla en desarrollo:
+
+```bash
+dotnet dev-certs https --trust
+```
+
+### Resumen rápido (comandos)
+
+```bash
+cd Taskify-ASP
+dotnet restore && dotnet build
+dotnet user-secrets set "Supabase:Url" "..."
+dotnet user-secrets set "Supabase:AnonKey" "..."
+dotnet user-secrets set "ConnectionStrings:DefaultConnection" "..."
+dotnet ef database update
+dotnet run
+```
+
+*(Configura el dashboard de Supabase antes de probar registro por correo.)*
 
 ## Cómo funciona la autenticación
 
@@ -113,10 +156,12 @@ ASPNETCORE_ENVIRONMENT=Production
 ASPNETCORE_HTTP_PORTS=8080
 Supabase__Url=https://TU-PROYECTO.supabase.co
 Supabase__AnonKey=TU-ANON-KEY
+ConnectionStrings__DefaultConnection=Host=TU-HOST.pooler.supabase.com;Port=5432;Database=postgres;Username=postgres.TU-PROJECT-REF;Password=TU-PASSWORD;SSL Mode=Require;Trust Server Certificate=true
 DataProtection__KeyRingPath=/keys
 ```
 
-El doble guion bajo es el separador de secciones que ASP.NET Core traduce a `Supabase:Url`.
+El doble guion bajo es el separador de secciones que ASP.NET Core traduce a `Supabase:Url` o
+`ConnectionStrings:DefaultConnection`.
 
 Al desplegar con un dominio real hay que actualizar el `Site URL` del dashboard y añadirlo a
 `Redirect URLs`, porque `{{ .SiteURL }}` es lo que construye los enlaces de los correos.

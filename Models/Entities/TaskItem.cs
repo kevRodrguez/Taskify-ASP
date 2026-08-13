@@ -24,6 +24,9 @@ public class TaskItem
 
     public DateTimeOffset UpdatedAt { get; set; }
 
+    /// <summary>
+    /// Soft delete: null = tarea activa; timestamp = borrada (no se elimina la fila).
+    /// </summary>
     public DateTimeOffset? DeletedAt { get; set; }
 
     public Project Project { get; set; } = null!;

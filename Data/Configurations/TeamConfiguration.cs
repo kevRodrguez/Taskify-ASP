@@ -19,6 +19,7 @@ public class TeamConfiguration : IEntityTypeConfiguration<Team>
         builder.Property(t => t.Description)
             .HasMaxLength(500);
 
+        // Soft delete: consultas normales omiten equipos con DeletedAt distinto de null.
         builder.HasQueryFilter(t => t.DeletedAt == null);
 
         builder.HasOne(t => t.Creator)

@@ -16,6 +16,9 @@ public class Project
 
     public DateOnly DueDate { get; set; }
 
+    /// <summary>
+    /// Ciclo de vida del proyecto. Archivar = <see cref="ProjectStatus.Archived"/> (no hay DeletedAt).
+    /// </summary>
     public ProjectStatus Status { get; set; }
 
     public DateTimeOffset CreatedAt { get; set; }

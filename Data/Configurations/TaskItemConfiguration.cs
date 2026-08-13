@@ -19,6 +19,7 @@ public class TaskItemConfiguration : IEntityTypeConfiguration<TaskItem>
         builder.Property(t => t.Description)
             .HasMaxLength(2000);
 
+        // Soft delete: consultas normales omiten tareas con DeletedAt distinto de null.
         builder.HasQueryFilter(t => t.DeletedAt == null);
 
         builder.HasOne(t => t.Project)

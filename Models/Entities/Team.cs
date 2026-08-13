@@ -12,6 +12,9 @@ public class Team
 
     public DateTimeOffset CreatedAt { get; set; }
 
+    /// <summary>
+    /// Soft delete: null = equipo activo; timestamp = borrado (no se elimina la fila).
+    /// </summary>
     public DateTimeOffset? DeletedAt { get; set; }
 
     public Profile Creator { get; set; } = null!;

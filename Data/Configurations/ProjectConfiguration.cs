@@ -19,6 +19,8 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
         builder.Property(p => p.Description)
             .HasMaxLength(1000);
 
+        // Projects no usan DeletedAt; archivar/completar se modela con ProjectStatus (Active/Completed/Archived).
+
         builder.ToTable(t => t.HasCheckConstraint("CK_Projects_DueDate", "\"DueDate\" >= \"StartDate\""));
 
         builder.HasOne(p => p.Team)

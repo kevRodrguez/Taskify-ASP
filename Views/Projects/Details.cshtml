@@ -1,0 +1,55 @@
+@model ProjectDetailsViewModel
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<div class="page-header">
+    <div>
+        <p class="brand-eyebrow mb-2">@Model.TeamName</p>
+        <h1 class="page-title">@Model.Name</h1>
+        <span class="badge-brand @Model.Status.BadgeClass()">@Model.Status.Display()</span>
+    </div>
+    <div class="d-flex flex-wrap gap-2">
+        <a asp-controller="Tasks" asp-action="Board" asp-route-projectId="@Model.ProjectId" class="btn-brand-primary btn-sm">Tablero Kanban</a>
+        @if (Model.CanManage)
+        {
+            <a asp-action="Edit" asp-route-id="@Model.ProjectId" class="btn-brand-secondary btn-sm">Editar</a>
+        }
+    </div>
+</div>
+
+<div class="content-card mb-4">
+    <p class="text-secondary">@(Model.Description ?? "Sin descripción")</p>
+    <dl class="row mb-0">
+        <dt class="col-sm-3">Inicio</dt>
+        <dd class="col-sm-9">@Model.StartDate.ToString("dd/MM/yyyy")</dd>
+        <dt class="col-sm-3">Vencimiento</dt>
+        <dd class="col-sm-9">@Model.DueDate.ToString("dd/MM/yyyy")</dd>
+        <dt class="col-sm-3">Equipo</dt>
+        <dd class="col-sm-9"><a asp-controller="Teams" asp-action="Details" asp-route-id="@Model.TeamId">@Model.TeamName</a></dd>
+    </dl>
+</div>
+
+@if (Model.CanManage)
+{
+    <div class="d-flex flex-wrap gap-2">
+        @if (Model.Status != ProjectStatus.Completed)
+        {
+            <form asp-action="Complete" asp-route-id="@Model.ProjectId" method="post">
+                <button type="submit" class="btn-brand-primary btn-sm">Marcar como finalizado</button>
+            </form>
+        }
+        @if (Model.Status != ProjectStatus.Archived)
+        {
+            <form asp-action="Archive" asp-route-id="@Model.ProjectId" method="post">
+                <button type="submit" class="btn-brand-secondary btn-sm">Archivar</button>
+            </form>
+        }
+        @if (Model.Status != ProjectStatus.Active)
+        {
+            <form asp-action="Reopen" asp-route-id="@Model.ProjectId" method="post">
+                <button type="submit" class="btn-brand-secondary btn-sm">Reactivar</button>
+            </form>
+        }
+    </div>
+}

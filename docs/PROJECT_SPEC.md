@@ -132,19 +132,18 @@ Tarea   ──> Estado (Kanban: Por hacer | En curso | Finalizado)
 | Sesiones | Cookie `sb-session` cifrada con Data Protection; handler personalizado `SupabaseAuthenticationHandler` |
 | Vistas de auth | Login, Register, ForgotPassword, ResetPassword, Profile |
 | Infraestructura | Docker, README de despliegue (Dokploy/VPS), user secrets |
+| EF Core Code First | Entidades, Fluent API, migraciones PostgreSQL (Supabase) |
+| Equipos | CRUD, miembros M:N por email, roles Owner/Admin/Member, soft delete |
+| Proyectos | CRUD, fechas coherentes, estados Active/Completed/Archived |
+| Tareas / Kanban | CRUD, tablero por estado, drag-and-drop, asignación a miembros |
+| WebSockets | SignalR `TaskBoardHub`: el tablero se actualiza al cambiar el estado |
+| Email de dominio | SMTP (MailKit): asignación, vencimiento inminente, proyecto finalizado |
+| Notificaciones in-app | Historial por perfil y campana en la navbar |
+| Validación | Data Annotations en ViewModels, `[DateNotBefore]`, `[DefinedEnum]`, CHECK en Postgres |
 
 ### Pendiente respecto a la especificación académica
 
-| Módulo | Estado |
-| --- | --- |
-| Entity Framework Core (Code First) | No implementado |
-| Modelo relacional (usuarios, equipos, proyectos, tareas) | No implementado |
-| CRUD de proyectos | No implementado |
-| Gestión de equipos (M:N usuarios-equipos) | No implementado |
-| Tablero Kanban de tareas | No implementado |
-| WebSockets (SignalR u otro) | No implementado |
-| Notificaciones por email de dominio (tareas/proyectos) | No implementado — solo emails de auth de Supabase |
-| Perfiles de usuario en dominio de negocio | Parcial — solo perfil básico de auth |
+Cubierto. Ver checklist en la sección 6.
 
 ### Nota sobre autenticación vs. especificación
 
@@ -159,19 +158,19 @@ La especificación asume un gestor ASP.NET clásico con EF Core. Este repositori
 
 Usar esta lista para validar avances contra la especificación original:
 
-- [ ] Base de datos relacional creada con EF Core Code First y migraciones
-- [ ] Relación M:N Usuario ↔ Equipo funcional
-- [ ] Relación 1:N Equipo → Proyecto funcional
-- [ ] Relación 1:N Proyecto → Tarea funcional
-- [ ] CRUD completo de proyectos con fechas coherentes
-- [ ] CRUD de tareas con asignación a miembros del equipo
-- [ ] Tablero Kanban con estados configurables y drag-and-drop o cambio de estado
-- [ ] WebSockets: cambio de estado de tarea reflejado en tiempo real para otros clientes conectados
-- [ ] Email al asignar una tarea
-- [ ] Email al acercarse fecha de vencimiento
-- [ ] Email al finalizar un proyecto
-- [ ] Data Annotations en ViewModels/entidades con validación cliente y servidor
-- [ ] Reglas de negocio: fechas de fin ≥ fechas de inicio
+- [x] Base de datos relacional creada con EF Core Code First y migraciones
+- [x] Relación M:N Usuario ↔ Equipo funcional
+- [x] Relación 1:N Equipo → Proyecto funcional
+- [x] Relación 1:N Proyecto → Tarea funcional
+- [x] CRUD completo de proyectos con fechas coherentes
+- [x] CRUD de tareas con asignación a miembros del equipo
+- [x] Tablero Kanban con estados configurables y drag-and-drop o cambio de estado
+- [x] WebSockets: cambio de estado de tarea reflejado en tiempo real para otros clientes conectados
+- [x] Email al asignar una tarea
+- [x] Email al acercarse fecha de vencimiento
+- [x] Email al finalizar un proyecto
+- [x] Data Annotations en ViewModels/entidades con validación cliente y servidor
+- [x] Reglas de negocio: fechas de fin ≥ fechas de inicio
 
 ---
 

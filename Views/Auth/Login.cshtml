@@ -1,0 +1,41 @@
+@model LoginViewModel
+@{
+    ViewData["Title"] = "Iniciar sesión";
+}
+
+<div class="auth-page">
+    <div class="auth-card">
+        <p class="brand-eyebrow mb-2">Acceso</p>
+        <h1 class="auth-card__title">Iniciar sesión</h1>
+        <p class="auth-card__subtitle">Entra con tu correo y contraseña.</p>
+
+        <form asp-action="Login" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post">
+            <div asp-validation-summary="ModelOnly" class="alert alert-brand-danger" role="alert"></div>
+
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label"></label>
+                <input asp-for="Email" class="form-control" autocomplete="username" autofocus/>
+                <span asp-validation-for="Email" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="Password" class="form-label"></label>
+                <input asp-for="Password" class="form-control" autocomplete="current-password"/>
+                <span asp-validation-for="Password" class="text-danger small"></span>
+            </div>
+
+            <button type="submit" class="btn-brand-primary w-100">Entrar</button>
+        </form>
+
+        <hr class="my-4"/>
+
+        <div class="d-flex justify-content-between small">
+            <a asp-action="ForgotPassword" class="brand-link">¿Olvidaste tu contraseña?</a>
+            <a asp-action="Register" class="brand-link">Crear una cuenta</a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial"/>
+}

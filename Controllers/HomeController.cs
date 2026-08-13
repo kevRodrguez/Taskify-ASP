@@ -1,6 +1,6 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using Taskify.Models;
+using Taskify.ViewModels;
 
 namespace Taskify.Controllers;
 

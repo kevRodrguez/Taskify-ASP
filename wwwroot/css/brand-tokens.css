@@ -1,0 +1,79 @@
+/*
+ * Taskify — Design tokens (constantes de marca)
+ * Fuente canónica: docs/branding.md
+ */
+
+:root {
+  /* ── Colores ── */
+  --color-bg-primary: #F5F2EE;
+  --color-accent: #EF661F;
+  --color-accent-hover: #D95515;
+  --color-accent-muted: #FDF0E8;
+  --color-accent-ring: rgba(239, 102, 31, 0.25);
+
+  --color-text-primary: #1A1A1A;
+  --color-text-secondary: #707070;
+  --color-border: #E2DCD5;
+  --color-surface: #FFFFFF;
+  --color-white: #FFFFFF;
+
+  --color-danger: #C0392B;
+  --color-danger-muted: #FDEDEC;
+  --color-success: #2D6A4F;
+  --color-success-muted: #E8F5EE;
+  --color-info: #3D5A80;
+  --color-info-muted: #EBF0F6;
+
+  /* ── Tipografía ── */
+  --font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --letter-spacing-tight: -0.02em;
+  --letter-spacing-label: 0.08em;
+
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.75rem;
+  --font-size-display: clamp(2.25rem, 5vw, 3.5rem);
+
+  --line-height-tight: 1.15;
+  --line-height-normal: 1.6;
+
+  /* ── Espaciado ── */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2.5rem;
+  --space-2xl: 4rem;
+
+  /* ── Bordes ── */
+  --radius-input: 12px;
+  --radius-card: 16px;
+  --radius-pill: 9999px;
+
+  /* ── Sombras ── */
+  --shadow-sm: 0 2px 8px rgba(26, 26, 26, 0.06);
+  --shadow-md: 0 8px 24px rgba(26, 26, 26, 0.08);
+  --shadow-lg: 0 16px 48px rgba(26, 26, 26, 0.10);
+
+  /* ── Layout ── */
+  --container-max: 1140px;
+  --auth-card-max: 480px;
+
+  /* ── Bootstrap overrides ── */
+  --bs-body-bg: var(--color-bg-primary);
+  --bs-body-color: var(--color-text-primary);
+  --bs-primary: var(--color-accent);
+  --bs-primary-rgb: 239, 102, 31;
+  --bs-border-color: var(--color-border);
+  --bs-link-color: var(--color-accent);
+  --bs-link-hover-color: var(--color-accent-hover);
+  --bs-font-sans-serif: var(--font-family);
+}

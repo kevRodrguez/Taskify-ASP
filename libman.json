@@ -41,6 +41,13 @@
       "files": [
         "Sortable.min.js"
       ]
+    },
+    {
+      "library": "microsoft-signalr@8.0.7",
+      "destination": "wwwroot/lib/microsoft-signalr/",
+      "files": [
+        "signalr.min.js"
+      ]
     }
   ]
 }

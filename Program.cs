@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using Supabase;
 using Taskify.Auth;
 using Taskify.Configuration;
+using Taskify.Hubs;
 using Taskify.Data;
 using Taskify.Services;
 using Taskify.Validation;
@@ -14,6 +15,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddSingleton<IValidationAttributeAdapterProvider, TaskifyValidationAttributeAdapterProvider>();
+builder.Services.AddSignalR();
 builder.Services.AddAntiforgery(options => options.HeaderName = "RequestVerificationToken");
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -113,5 +115,6 @@ app.MapControllerRoute(
         pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
+app.MapHub<TaskBoardHub>("/hubs/tasks");
 
 app.Run();

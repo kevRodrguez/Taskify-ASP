@@ -13,7 +13,14 @@ public record AuthResult(bool Succeeded, string? Error = null)
 /// Cierto cuando el proyecto tiene activado "Confirm email": Supabase crea el usuario
 /// pero no devuelve sesion hasta que se confirma el correo.
 /// </param>
-public record SignUpResult(bool Succeeded, bool RequiresEmailConfirmation, string? Error = null);
+/// <param name="UserId">
+/// ID del usuario en auth.users. Disponible tras un registro exitoso aunque falte confirmar el correo.
+/// </param>
+public record SignUpResult(
+    bool Succeeded,
+    bool RequiresEmailConfirmation,
+    string? Error = null,
+    Guid? UserId = null);
 
 public interface IAuthService
 {

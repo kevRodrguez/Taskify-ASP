@@ -33,10 +33,16 @@ public class SupabaseAuthService : IAuthService
         try
         {
             var session = await _supabase.Auth.SignUp(email, password, options);
+            var user = session?.User ?? _supabase.Auth.CurrentUser;
+
+            if (user?.Id is not { Length: > 0 } idString || !Guid.TryParse(idString, out var userId))
+            {
+                return new SignUpResult(false, false, "No se pudo registrar el usuario. Inténtalo de nuevo.");
+            }
 
             // Con "Confirm email" activo, Supabase devuelve el usuario pero sin sesion.
             var confirmed = !string.IsNullOrEmpty(session?.AccessToken);
-            return new SignUpResult(true, !confirmed);
+            return new SignUpResult(true, !confirmed, UserId: userId);
         }
         catch (GotrueException ex)
         {

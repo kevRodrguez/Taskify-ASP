@@ -61,6 +61,7 @@ builder.Services.AddScoped(sp =>
 });
 
 builder.Services.AddScoped<IAuthService, SupabaseAuthService>();
+builder.Services.AddScoped<IProfileService, ProfileService>();
 
 builder.Services
     .AddAuthentication(SupabaseAuthenticationDefaults.Scheme)

@@ -11,10 +11,12 @@ public class AuthController : Controller
     private const string StatusMessageKey = "StatusMessage";
 
     private readonly IAuthService _auth;
+    private readonly IProfileService _profiles;
 
-    public AuthController(IAuthService auth)
+    public AuthController(IAuthService auth, IProfileService profiles)
     {
         _auth = auth;
+        _profiles = profiles;
     }
 
     [HttpGet]
@@ -37,6 +39,11 @@ public class AuthController : Controller
         {
             ModelState.AddModelError(string.Empty, result.Error!);
             return View(model);
+        }
+
+        if (result.UserId.HasValue)
+        {
+            await _profiles.GetOrCreateAsync(result.UserId.Value, model.FullName ?? string.Empty, model.Email);
         }
 
         if (result.RequiresEmailConfirmation)
@@ -78,6 +85,8 @@ public class AuthController : Controller
             ModelState.AddModelError(string.Empty, result.Error!);
             return View(model);
         }
+
+        await _profiles.SyncFromSupabaseSessionAsync();
 
         return RedirectToLocalOrHome(returnUrl);
     }
@@ -141,6 +150,8 @@ public class AuthController : Controller
             TempData[StatusMessageKey] = result.Error;
             return RedirectToAction(nameof(Login));
         }
+
+        await _profiles.SyncFromSupabaseSessionAsync();
 
         if (otpType == EmailOtpType.Recovery)
         {

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Taskify.Data;
@@ -11,9 +12,11 @@ using Taskify.Data;
 namespace Taskify.Migrations
 {
     [DbContext(typeof(TaskifyDbContext))]
-    partial class TaskifyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260813003657_AddEnumCheckConstraints")]
+    partial class AddEnumCheckConstraints
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

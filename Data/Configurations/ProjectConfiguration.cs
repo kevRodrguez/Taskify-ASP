@@ -21,7 +21,11 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
 
         // Projects no usan DeletedAt; archivar/completar se modela con ProjectStatus (Active/Completed/Archived).
 
-        builder.ToTable(t => t.HasCheckConstraint("CK_Projects_DueDate", "\"DueDate\" >= \"StartDate\""));
+        builder.ToTable(t =>
+        {
+            t.HasCheckConstraint("CK_Projects_DueDate", "\"DueDate\" >= \"StartDate\"");
+            t.HasCheckConstraint("CK_Projects_Status", "\"Status\" IN (0, 1, 2)");
+        });
 
         builder.HasOne(p => p.Team)
             .WithMany(t => t.Projects)

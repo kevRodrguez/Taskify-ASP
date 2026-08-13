@@ -10,6 +10,8 @@ public class TeamMemberConfiguration : IEntityTypeConfiguration<TeamMember>
     {
         builder.HasKey(tm => new { tm.TeamId, tm.ProfileId });
 
+        builder.ToTable(t => t.HasCheckConstraint("CK_TeamMembers_Role", "\"Role\" IN (0, 1, 2)"));
+
         builder.HasOne(tm => tm.Team)
             .WithMany(t => t.Members)
             .HasForeignKey(tm => tm.TeamId)

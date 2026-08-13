@@ -83,6 +83,18 @@ project.Status = ProjectStatus.Archived;
 
 **Por qué enum y no `DeletedAt`:** permite distinguir *completado* (`Completed`) de *archivado* (`Archived`) sin dos mecanismos distintos.
 
+### Validación de enums
+
+Los enums son de **C#** y se guardan como **`int4`**. Validación en dos capas:
+
+| Capa | Qué hace |
+| --- | --- |
+| **ViewModels** | `[DefinedEnum(typeof(TeamMemberRole))]` en propiedades que vienen del formulario |
+| **EF / SaveChanges** | `EnumValidator` rechaza valores no definidos antes de persistir |
+| **PostgreSQL** | `CHECK` en `TeamMembers.Role`, `Projects.Status`, `TaskItems.Status` |
+
+Valores permitidos: ver tabla de enums abajo.
+
 ## Enums
 
 | Enum | Valores |

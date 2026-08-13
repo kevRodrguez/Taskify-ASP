@@ -19,6 +19,8 @@ public class TaskItemConfiguration : IEntityTypeConfiguration<TaskItem>
         builder.Property(t => t.Description)
             .HasMaxLength(2000);
 
+        builder.ToTable(t => t.HasCheckConstraint("CK_TaskItems_Status", "\"Status\" IN (0, 1, 2)"));
+
         // Soft delete: consultas normales omiten tareas con DeletedAt distinto de null.
         builder.HasQueryFilter(t => t.DeletedAt == null);
 

@@ -546,6 +546,23 @@ a:not(.btn-brand-primary):not(.btn-brand-secondary):not(.btn-brand-danger):not(.
   color: var(--color-white) !important;
 }
 
+.notification-badge {
+  position: absolute;
+  top: 0.15rem;
+  right: 0.15rem;
+  min-width: 1.15rem;
+  height: 1.15rem;
+  padding: 0 0.25rem;
+  border-radius: var(--radius-pill);
+  background: var(--color-accent);
+  color: var(--color-white);
+  font-size: 0.65rem;
+  font-weight: var(--font-weight-semibold);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .form-select {
   padding: 0.625rem 1rem;
   border: 1px solid var(--color-border);

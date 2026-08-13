@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Mvc.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Supabase;
@@ -7,10 +8,12 @@ using Taskify.Auth;
 using Taskify.Configuration;
 using Taskify.Data;
 using Taskify.Services;
+using Taskify.Validation;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
+builder.Services.AddSingleton<IValidationAttributeAdapterProvider, TaskifyValidationAttributeAdapterProvider>();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 if (string.IsNullOrWhiteSpace(connectionString))
@@ -62,6 +65,8 @@ builder.Services.AddScoped(sp =>
 
 builder.Services.AddScoped<IAuthService, SupabaseAuthService>();
 builder.Services.AddScoped<IProfileService, ProfileService>();
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+builder.Services.AddScoped<ITeamAccessService, TeamAccessService>();
 
 builder.Services
     .AddAuthentication(SupabaseAuthenticationDefaults.Scheme)
@@ -70,7 +75,7 @@ builder.Services
         options =>
         {
             options.LoginPath = "/Auth/Login";
-            options.AccessDeniedPath = "/Auth/Login";
+            options.AccessDeniedPath = "/Home/AccessDenied";
         });
 
 builder.Services.AddAuthorization();

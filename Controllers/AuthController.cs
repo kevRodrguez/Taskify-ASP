@@ -196,9 +196,48 @@ public class AuthController : Controller
 
     [HttpGet]
     [Authorize]
-    public IActionResult Profile()
+    public async Task<IActionResult> Profile()
     {
-        return View();
+        var profile = await _profiles.GetByCurrentUserAsync();
+        if (profile is null)
+        {
+            return RedirectToAction(nameof(Login));
+        }
+
+        return View(new ProfileViewModel
+        {
+            FullName = profile.FullName,
+            Email = profile.Email
+        });
+    }
+
+    [HttpPost]
+    [Authorize]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Profile(ProfileViewModel model)
+    {
+        var current = await _profiles.GetByCurrentUserAsync();
+        if (current is null)
+        {
+            return RedirectToAction(nameof(Login));
+        }
+
+        model.Email = current.Email;
+
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+
+        var result = await _profiles.UpdateFullNameAsync(model.FullName);
+        if (!result.Succeeded)
+        {
+            ModelState.AddModelError(string.Empty, result.Error!);
+            return View(model);
+        }
+
+        TempData[StatusMessageKey] = "Tu nombre se actualizó correctamente.";
+        return RedirectToAction(nameof(Profile));
     }
 
     private bool IsSignedIn => User.Identity?.IsAuthenticated ?? false;

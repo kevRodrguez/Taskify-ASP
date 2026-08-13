@@ -10,4 +10,8 @@ public interface IProfileService
     /// Crea o actualiza el perfil a partir de la sesión activa de Supabase.
     /// </summary>
     Task<Profile?> SyncFromSupabaseSessionAsync();
+
+    Task<Profile?> GetByCurrentUserAsync();
+
+    Task<AuthResult> UpdateFullNameAsync(string fullName);
 }

@@ -1,5 +1,4 @@
-@using System.Security.Claims
-@using Taskify.Auth
+@model ProfileViewModel
 @{
     ViewData["Title"] = "Mi perfil";
 }
@@ -9,19 +8,29 @@
         <p class="brand-eyebrow mb-2">Cuenta</p>
         <h1 class="content-card__title">Mi perfil</h1>
 
-        <dl class="row mb-0">
-            <dt class="col-sm-4">Nombre</dt>
-            <dd class="col-sm-8">@(User.FindFirstValue(TaskifyClaimTypes.FullName) ?? "Sin definir")</dd>
+        <form asp-action="Profile" method="post">
+            <div asp-validation-summary="ModelOnly" class="alert alert-brand-danger" role="alert"></div>
 
-            <dt class="col-sm-4">Correo</dt>
-            <dd class="col-sm-8">@User.FindFirstValue(ClaimTypes.Email)</dd>
+            <div class="mb-3">
+                <label asp-for="FullName" class="form-label"></label>
+                <input asp-for="FullName" class="form-control" autocomplete="name"/>
+                <span asp-validation-for="FullName" class="text-danger small"></span>
+            </div>
 
-            <dt class="col-sm-4">ID de usuario</dt>
-            <dd class="col-sm-8"><code>@User.FindFirstValue(ClaimTypes.NameIdentifier)</code></dd>
-        </dl>
+            <div class="mb-4">
+                <label class="form-label">Correo electrónico</label>
+                <p class="form-control-plaintext mb-0 text-secondary">@Model.Email</p>
+            </div>
+
+            <button type="submit" class="btn-brand-primary">Guardar cambios</button>
+        </form>
 
         <hr class="my-4"/>
 
         <a asp-action="ResetPassword" class="btn-brand-secondary btn-sm">Cambiar contraseña</a>
     </div>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial"/>
+}

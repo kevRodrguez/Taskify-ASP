@@ -31,6 +31,8 @@ builder.Services.AddDbContext<TaskifyDbContext>(options =>
 
 builder.Services.Configure<SupabaseSettings>(
     builder.Configuration.GetSection(SupabaseSettings.SectionName));
+builder.Services.Configure<EmailSettings>(
+    builder.Configuration.GetSection(EmailSettings.SectionName));
 builder.Services.AddHttpContextAccessor();
 
 // El key ring cifra la cookie de sesion. Sin una ruta persistente, cada redespliegue
@@ -73,6 +75,9 @@ builder.Services.AddScoped<ITeamAccessService, TeamAccessService>();
 builder.Services.AddScoped<ITeamService, TeamService>();
 builder.Services.AddScoped<IProjectService, ProjectService>();
 builder.Services.AddScoped<ITaskService, TaskService>();
+builder.Services.AddScoped<IEmailSender, SmtpEmailSender>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddHostedService<DueDateReminderService>();
 
 builder.Services
     .AddAuthentication(SupabaseAuthenticationDefaults.Scheme)

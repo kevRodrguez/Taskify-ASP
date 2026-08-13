@@ -5,6 +5,7 @@
     }
 
     var projectId = board.getAttribute("data-project-id");
+    var hubUrl = board.getAttribute("data-hub-url");
     var tokenInput = document.querySelector("#kanban-af input[name='__RequestVerificationToken']");
     var token = tokenInput ? tokenInput.value : "";
     var lastClientRequestId = null;
@@ -115,5 +116,40 @@
                 });
             }
         });
+    });
+
+    if (!window.signalR) {
+        return;
+    }
+
+    var connection = new signalR.HubConnectionBuilder()
+        .withUrl(hubUrl)
+        .withAutomaticReconnect()
+        .build();
+
+    connection.on("TaskUpdated", function (event) {
+        if (!event) {
+            return;
+        }
+        if (String(event.projectId).toLowerCase() !== String(projectId).toLowerCase()) {
+            return;
+        }
+        if (event.clientRequestId && event.clientRequestId === lastClientRequestId) {
+            return;
+        }
+        if (event.deleted) {
+            var existing = cardById(event.taskItemId);
+            if (existing) {
+                existing.remove();
+            }
+            return;
+        }
+        upsertCard(event);
+    });
+
+    connection.start().then(function () {
+        return connection.invoke("JoinProject", projectId);
+    }).catch(function (err) {
+        console.warn("No se pudo conectar al tablero en tiempo real.", err);
     });
 })();

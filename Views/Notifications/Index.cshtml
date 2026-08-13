@@ -1,0 +1,47 @@
+@model IReadOnlyList<NotificationListItemViewModel>
+@{
+    ViewData["Title"] = "Notificaciones";
+}
+
+<div class="page-header">
+    <div>
+        <p class="brand-eyebrow mb-2">Actividad</p>
+        <h1 class="page-title">Notificaciones</h1>
+    </div>
+    @if (Model.Any(n => !n.IsRead))
+    {
+        <form asp-action="MarkAllRead" method="post">
+            <button type="submit" class="btn-brand-secondary btn-sm">Marcar todas como leídas</button>
+        </form>
+    }
+</div>
+
+@if (Model.Count == 0)
+{
+    <div class="empty-state">
+        <p class="empty-state__title">No tienes notificaciones</p>
+        <p class="empty-state__text">Cuando te asignen una tarea o se complete un proyecto, aparecerán aquí.</p>
+    </div>
+}
+else
+{
+    <div class="content-card">
+        <ul class="list-unstyled mb-0">
+            @foreach (var item in Model)
+            {
+                <li class="member-row @(item.IsRead ? "is-muted" : null)">
+                    <div>
+                        <p class="mb-1">@item.Message</p>
+                        <p class="small text-secondary mb-0">@item.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</p>
+                    </div>
+                    @if (!item.IsRead)
+                    {
+                        <form asp-action="MarkRead" asp-route-id="@item.NotificationId" method="post">
+                            <button type="submit" class="btn-brand-secondary btn-sm">Leída</button>
+                        </form>
+                    }
+                </li>
+            }
+        </ul>
+    </div>
+}

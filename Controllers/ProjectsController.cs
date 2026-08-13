@@ -15,15 +15,18 @@ public class ProjectsController : Controller
     private readonly ICurrentUserService _currentUser;
     private readonly IProjectService _projects;
     private readonly ITeamAccessService _access;
+    private readonly INotificationService _notifications;
 
     public ProjectsController(
         ICurrentUserService currentUser,
         IProjectService projects,
-        ITeamAccessService access)
+        ITeamAccessService access,
+        INotificationService notifications)
     {
         _currentUser = currentUser;
         _projects = projects;
         _access = access;
+        _notifications = notifications;
     }
 
     public async Task<IActionResult> Index(Guid? teamId, ProjectStatus? status)
@@ -158,11 +161,19 @@ public class ProjectsController : Controller
     [TeamAuthorize(resource: TeamAuthorizeResource.Project, minLevel: TeamAccessLevel.Manager)]
     public async Task<IActionResult> Complete(Guid id)
     {
+        var project = await _projects.GetAsync(id);
+        if (project is null)
+        {
+            return NotFound();
+        }
+
         if (!await _projects.SetStatusAsync(id, ProjectStatus.Completed))
         {
             return NotFound();
         }
 
+        project.Status = ProjectStatus.Completed;
+        await _notifications.NotifyProjectCompletedAsync(project);
         TempData["StatusMessage"] = "Proyecto marcado como finalizado.";
         return RedirectToAction(nameof(Details), new { id });
     }

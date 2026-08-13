@@ -29,6 +29,11 @@ public class TaskItem
     /// </summary>
     public DateTimeOffset? DeletedAt { get; set; }
 
+    /// <summary>
+    /// Último recordatorio de vencimiento enviado. Null = aún no se ha avisado.
+    /// </summary>
+    public DateTimeOffset? LastReminderSentAt { get; set; }
+
     public Project Project { get; set; } = null!;
 
     public Profile? AssignedTo { get; set; }

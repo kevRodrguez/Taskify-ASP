@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.SignalR;
 using Taskify.Authorization;
+using Taskify.Hubs;
 using Taskify.Models.Enums;
 using Taskify.Services;
 using Taskify.ViewModels.Tasks;
@@ -14,12 +16,18 @@ public class TasksController : Controller
     private readonly ITaskService _tasks;
     private readonly IProjectService _projects;
     private readonly ITeamService _teams;
+    private readonly IHubContext<TaskBoardHub> _hub;
 
-    public TasksController(ITaskService tasks, IProjectService projects, ITeamService teams)
+    public TasksController(
+        ITaskService tasks,
+        IProjectService projects,
+        ITeamService teams,
+        IHubContext<TaskBoardHub> hub)
     {
         _tasks = tasks;
         _projects = projects;
         _teams = teams;
+        _hub = hub;
     }
 
     [HttpGet]
@@ -162,6 +170,13 @@ public class TasksController : Controller
             return NotFound();
         }
 
+        await BroadcastAsync(new TaskBoardEvent
+        {
+            TaskItemId = id,
+            ProjectId = projectId,
+            Deleted = true
+        });
+
         TempData["StatusMessage"] = "Tarea eliminada.";
         return RedirectToAction(nameof(Board), new { projectId });
     }
@@ -187,18 +202,27 @@ public class TasksController : Controller
             return NotFound();
         }
 
-        return Json(new
+        var payload = new TaskBoardEvent
         {
-            task.TaskItemId,
-            task.ProjectId,
-            task.Status,
-            task.SortOrder,
-            task.Title,
-            task.Description,
+            TaskItemId = task.TaskItemId,
+            ProjectId = task.ProjectId,
+            Status = task.Status,
+            SortOrder = task.SortOrder,
+            Title = task.Title,
+            Description = task.Description,
             AssignedToName = task.AssignedTo?.FullName,
-            task.DueDate,
-            model.ClientRequestId
-        });
+            DueDate = task.DueDate,
+            ClientRequestId = model.ClientRequestId
+        };
+
+        await BroadcastAsync(payload);
+        return Json(payload);
+    }
+
+    private async Task BroadcastAsync(TaskBoardEvent payload)
+    {
+        await _hub.Clients.Group(TaskBoardHub.GroupName(payload.ProjectId))
+            .SendAsync(TaskBoardHub.TaskUpdatedEvent, payload);
     }
 
     private async Task PopulateAssigneesAsync(TaskFormViewModel model)

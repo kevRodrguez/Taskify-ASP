@@ -1,0 +1,38 @@
+@model IReadOnlyList<TeamListItemViewModel>
+@{
+    ViewData["Title"] = "Equipos";
+}
+
+<div class="page-header">
+    <div>
+        <p class="brand-eyebrow mb-2">Colaboración</p>
+        <h1 class="page-title">Tus equipos</h1>
+    </div>
+    <a asp-action="Create" class="btn-brand-primary">Nuevo equipo</a>
+</div>
+
+@if (Model.Count == 0)
+{
+    <div class="empty-state">
+        <p class="empty-state__title">Aún no perteneces a ningún equipo</p>
+        <p class="empty-state__text">Crea el primero para empezar a organizar proyectos y tareas.</p>
+        <a asp-action="Create" class="btn-brand-primary">Crear equipo</a>
+    </div>
+}
+else
+{
+    <div class="row g-4">
+        @foreach (var team in Model)
+        {
+            <div class="col-md-6 col-lg-4">
+                <article class="content-card h-100">
+                    <p class="brand-eyebrow mb-2">@team.Role.Display()</p>
+                    <h2 class="h4 mb-2">@team.Name</h2>
+                    <p class="text-secondary small mb-3">@(team.Description ?? "Sin descripción")</p>
+                    <p class="small text-secondary mb-4">@team.MemberCount miembro(s) · @team.ProjectCount proyecto(s) activo(s)</p>
+                    <a asp-action="Details" asp-route-id="@team.TeamId" class="btn-brand-secondary btn-sm">Ver equipo</a>
+                </article>
+            </div>
+        }
+    </div>
+}

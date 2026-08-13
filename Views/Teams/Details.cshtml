@@ -1,0 +1,113 @@
+@model TeamDetailsViewModel
+@{
+    ViewData["Title"] = Model.Name;
+    var roleOptions = new[] { TeamMemberRole.Owner, TeamMemberRole.Admin, TeamMemberRole.Member };
+}
+
+<div class="page-header">
+    <div>
+        <p class="brand-eyebrow mb-2">Equipo</p>
+        <h1 class="page-title">@Model.Name</h1>
+        <p class="text-secondary mb-0">@(Model.Description ?? "Sin descripción")</p>
+    </div>
+    <div class="d-flex flex-wrap gap-2">
+        <a asp-controller="Projects" asp-action="Index" asp-route-teamId="@Model.TeamId" class="btn-brand-secondary btn-sm">Proyectos</a>
+        @if (Model.CanManage)
+        {
+            <a asp-action="Edit" asp-route-id="@Model.TeamId" class="btn-brand-secondary btn-sm">Editar</a>
+        }
+        @if (Model.IsOwner)
+        {
+            <form asp-action="Delete" asp-route-id="@Model.TeamId" method="post" onsubmit="return confirm('¿Eliminar este equipo? Los miembros dejarán de verlo.');">
+                <button type="submit" class="btn-brand-danger btn-sm">Eliminar</button>
+            </form>
+        }
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-7">
+        <div class="content-card">
+            <h2 class="h4 mb-3">Miembros</h2>
+            @if (Model.Members.Count == 0)
+            {
+                <p class="text-secondary mb-0">No hay miembros.</p>
+            }
+            else
+            {
+                <ul class="list-unstyled mb-0">
+                    @foreach (var member in Model.Members)
+                    {
+                        <li class="member-row">
+                            <div>
+                                <strong>@member.FullName</strong>
+                                <div class="small text-secondary">@member.Email</div>
+                            </div>
+                            <div class="d-flex flex-wrap align-items-center gap-2">
+                                @if (Model.CanManage)
+                                {
+                                    <form asp-action="ChangeRole" method="post" class="d-flex gap-2 align-items-center">
+                                        <input type="hidden" name="TeamId" value="@Model.TeamId"/>
+                                        <input type="hidden" name="ProfileId" value="@member.ProfileId"/>
+                                        <select name="Role" class="form-select form-select-sm" onchange="this.form.submit()">
+                                            @foreach (var role in roleOptions)
+                                            {
+                                                if (role == TeamMemberRole.Owner && !Model.IsOwner)
+                                                {
+                                                    continue;
+                                                }
+                                                <option value="@((int)role)" selected="@(role == member.Role)">@role.Display()</option>
+                                            }
+                                        </select>
+                                    </form>
+                                    <form asp-action="RemoveMember" method="post" onsubmit="return confirm('¿Quitar a este miembro del equipo?');">
+                                        <input type="hidden" name="teamId" value="@Model.TeamId"/>
+                                        <input type="hidden" name="profileId" value="@member.ProfileId"/>
+                                        <button type="submit" class="btn-brand-danger btn-sm">Quitar</button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <span class="badge-brand @member.Role.BadgeClass()">@member.Role.Display()</span>
+                                }
+                            </div>
+                        </li>
+                    }
+                </ul>
+            }
+        </div>
+    </div>
+
+    @if (Model.CanManage)
+    {
+        <div class="col-lg-5">
+            <div class="content-card">
+                <h2 class="h4 mb-3">Agregar miembro</h2>
+                <p class="small text-secondary">Debe tener una cuenta registrada en Taskify.</p>
+                <form asp-action="AddMember" method="post">
+                    <input type="hidden" name="TeamId" value="@Model.TeamId"/>
+                    <div class="mb-3">
+                        <label class="form-label" for="add-member-email">Correo del miembro</label>
+                        <input id="add-member-email" name="Email" type="email" class="form-control" required/>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label" for="add-member-role">Rol</label>
+                        <select id="add-member-role" name="Role" class="form-select">
+                            @if (Model.IsOwner)
+                            {
+                                <option value="@((int)TeamMemberRole.Owner)">@TeamMemberRole.Owner.Display()</option>
+                            }
+                            <option value="@((int)TeamMemberRole.Admin)">@TeamMemberRole.Admin.Display()</option>
+                            <option value="@((int)TeamMemberRole.Member)" selected>@TeamMemberRole.Member.Display()</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-brand-primary">Agregar</button>
+                </form>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial"/>
+}

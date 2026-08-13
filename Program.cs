@@ -14,6 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddSingleton<IValidationAttributeAdapterProvider, TaskifyValidationAttributeAdapterProvider>();
+builder.Services.AddAntiforgery(options => options.HeaderName = "RequestVerificationToken");
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 if (string.IsNullOrWhiteSpace(connectionString))
@@ -69,6 +70,7 @@ builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<ITeamAccessService, TeamAccessService>();
 builder.Services.AddScoped<ITeamService, TeamService>();
 builder.Services.AddScoped<IProjectService, ProjectService>();
+builder.Services.AddScoped<ITaskService, TaskService>();
 
 builder.Services
     .AddAuthentication(SupabaseAuthenticationDefaults.Scheme)

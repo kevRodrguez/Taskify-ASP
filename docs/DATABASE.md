@@ -102,3 +102,7 @@ Valores permitidos: ver tabla de enums abajo.
 | `TeamMemberRole` | `Owner`, `Admin`, `Member` |
 | `ProjectStatus` | `Active`, `Completed`, `Archived` |
 | `TaskItemStatus` | `Todo`, `InProgress`, `Done` |
+
+## Campos extra de notificaciones
+
+`TaskItems.LastReminderSentAt` registra el último aviso de vencimiento (email + in-app). `null` = aún no se ha recordado.

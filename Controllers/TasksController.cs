@@ -13,20 +13,26 @@ namespace Taskify.Controllers;
 [Authorize]
 public class TasksController : Controller
 {
+    private readonly ICurrentUserService _currentUser;
     private readonly ITaskService _tasks;
     private readonly IProjectService _projects;
     private readonly ITeamService _teams;
+    private readonly INotificationService _notifications;
     private readonly IHubContext<TaskBoardHub> _hub;
 
     public TasksController(
+        ICurrentUserService currentUser,
         ITaskService tasks,
         IProjectService projects,
         ITeamService teams,
+        INotificationService notifications,
         IHubContext<TaskBoardHub> hub)
     {
+        _currentUser = currentUser;
         _tasks = tasks;
         _projects = projects;
         _teams = teams;
+        _notifications = notifications;
         _hub = hub;
     }
 
@@ -92,7 +98,13 @@ public class TasksController : Controller
             return View(model);
         }
 
-        await _tasks.CreateAsync(projectId, model);
+        var profileId = await _currentUser.GetProfileIdAsync();
+        var task = await _tasks.CreateAsync(projectId, model);
+        if (task.AssignedToProfileId.HasValue && profileId.HasValue)
+        {
+            await _notifications.NotifyTaskAssignedAsync(task, profileId.Value);
+        }
+
         TempData["StatusMessage"] = "Tarea creada.";
         return RedirectToAction(nameof(Board), new { projectId });
     }
@@ -144,9 +156,20 @@ public class TasksController : Controller
             return View(model);
         }
 
+        var previousAssignee = task.AssignedToProfileId;
         if (!await _tasks.UpdateAsync(id, model))
         {
             return NotFound();
+        }
+
+        if (model.AssignedToProfileId.HasValue && model.AssignedToProfileId != previousAssignee)
+        {
+            var updated = await _tasks.GetAsync(id);
+            var actor = await _currentUser.GetProfileIdAsync();
+            if (updated is not null && actor.HasValue)
+            {
+                await _notifications.NotifyTaskAssignedAsync(updated, actor.Value);
+            }
         }
 
         TempData["StatusMessage"] = "Tarea actualizada.";

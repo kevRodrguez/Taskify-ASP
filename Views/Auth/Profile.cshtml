@@ -1,0 +1,36 @@
+@model ProfileViewModel
+@{
+    ViewData["Title"] = "Mi perfil";
+}
+
+<div class="auth-page">
+    <div class="content-card" style="max-width: var(--auth-card-max); width: 100%;">
+        <p class="brand-eyebrow mb-2">Cuenta</p>
+        <h1 class="content-card__title">Mi perfil</h1>
+
+        <form asp-action="Profile" method="post">
+            <div asp-validation-summary="ModelOnly" class="alert alert-brand-danger" role="alert"></div>
+
+            <div class="mb-3">
+                <label asp-for="FullName" class="form-label"></label>
+                <input asp-for="FullName" class="form-control" autocomplete="name"/>
+                <span asp-validation-for="FullName" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label">Correo electrónico</label>
+                <p class="form-control-plaintext mb-0 text-secondary">@Model.Email</p>
+            </div>
+
+            <button type="submit" class="btn-brand-primary">Guardar cambios</button>
+        </form>
+
+        <hr class="my-4"/>
+
+        <a asp-action="ResetPassword" class="btn-brand-secondary btn-sm">Cambiar contraseña</a>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial"/>
+}

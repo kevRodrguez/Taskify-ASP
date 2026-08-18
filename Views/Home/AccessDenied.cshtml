@@ -1,0 +1,10 @@
+@{
+    ViewData["Title"] = "Acceso denegado";
+}
+
+<div class="empty-state mt-5">
+    <p class="brand-eyebrow">Permisos</p>
+    <p class="empty-state__title">No tienes acceso a este recurso</p>
+    <p class="empty-state__text">Pide a un propietario o administrador del equipo que te invite, o vuelve a tus equipos.</p>
+    <a asp-controller="Teams" asp-action="Index" class="btn-brand-primary">Ir a equipos</a>
+</div>

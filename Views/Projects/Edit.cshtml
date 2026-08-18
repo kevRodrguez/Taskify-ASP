@@ -1,0 +1,56 @@
+@model ProjectFormViewModel
+@{
+    ViewData["Title"] = "Editar proyecto";
+}
+
+<div class="auth-page">
+    <div class="content-card" style="max-width: 36rem; width: 100%;">
+        <p class="brand-eyebrow mb-2">Proyectos</p>
+        <h1 class="content-card__title">Editar proyecto</h1>
+
+        <form asp-action="Edit" method="post">
+            <div asp-validation-summary="ModelOnly" class="alert alert-brand-danger" role="alert"></div>
+            <input type="hidden" asp-for="ProjectId"/>
+            <input type="hidden" asp-for="TeamId"/>
+
+            <div class="mb-3">
+                <label asp-for="TeamId" class="form-label"></label>
+                <select asp-for="TeamId" asp-items="Model.Teams" class="form-select" disabled></select>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Name" class="form-label"></label>
+                <input asp-for="Name" class="form-control"/>
+                <span asp-validation-for="Name" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Description" class="form-label"></label>
+                <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                <span asp-validation-for="Description" class="text-danger small"></span>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="StartDate" class="form-label"></label>
+                    <input asp-for="StartDate" class="form-control"/>
+                    <span asp-validation-for="StartDate" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <label asp-for="DueDate" class="form-label"></label>
+                    <input asp-for="DueDate" class="form-control"/>
+                    <span asp-validation-for="DueDate" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn-brand-primary">Guardar</button>
+                <a asp-action="Details" asp-route-id="@Model.ProjectId" class="btn-brand-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial"/>
+}

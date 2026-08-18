@@ -1,6 +1,6 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using Taskify.Models;
+using Taskify.ViewModels;
 
 namespace Taskify.Controllers;
 
@@ -12,6 +12,12 @@ public class HomeController : Controller
     }
 
     public IActionResult Privacy()
+    {
+        return View();
+    }
+
+    [HttpGet]
+    public IActionResult AccessDenied()
     {
         return View();
     }

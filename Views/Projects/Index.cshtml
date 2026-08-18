@@ -1,0 +1,50 @@
+@model IReadOnlyList<ProjectListItemViewModel>
+@{
+    ViewData["Title"] = "Proyectos";
+    var status = (ProjectStatus)(ViewBag.Status ?? ProjectStatus.Active);
+    var teamId = ViewBag.TeamId as Guid?;
+}
+
+<div class="page-header">
+    <div>
+        <p class="brand-eyebrow mb-2">Planificación</p>
+        <h1 class="page-title">Proyectos</h1>
+    </div>
+    <a asp-action="Create" asp-route-teamId="@teamId" class="btn-brand-primary">Nuevo proyecto</a>
+</div>
+
+<div class="filter-row mb-4">
+    <a class="filter-chip @(status == ProjectStatus.Active ? "is-active" : null)" asp-action="Index" asp-route-status="@ProjectStatus.Active" asp-route-teamId="@teamId">Activos</a>
+    <a class="filter-chip @(status == ProjectStatus.Completed ? "is-active" : null)" asp-action="Index" asp-route-status="@ProjectStatus.Completed" asp-route-teamId="@teamId">Finalizados</a>
+    <a class="filter-chip @(status == ProjectStatus.Archived ? "is-active" : null)" asp-action="Index" asp-route-status="@ProjectStatus.Archived" asp-route-teamId="@teamId">Archivados</a>
+</div>
+
+@if (Model.Count == 0)
+{
+    <div class="empty-state">
+        <p class="empty-state__title">No hay proyectos en esta vista</p>
+        <p class="empty-state__text">Crea un proyecto para un equipo del que seas propietario o administrador.</p>
+        <a asp-action="Create" asp-route-teamId="@teamId" class="btn-brand-primary">Crear proyecto</a>
+    </div>
+}
+else
+{
+    <div class="row g-4">
+        @foreach (var project in Model)
+        {
+            <div class="col-md-6 col-lg-4">
+                <article class="content-card h-100">
+                    <span class="badge-brand @project.Status.BadgeClass()">@project.Status.Display()</span>
+                    <h2 class="h4 mt-3 mb-2">@project.Name</h2>
+                    <p class="small text-secondary mb-2">@project.TeamName</p>
+                    <p class="text-secondary small mb-3">@(project.Description ?? "Sin descripción")</p>
+                    <p class="small text-secondary mb-4">@project.StartDate.ToString("dd/MM/yyyy") – @project.DueDate.ToString("dd/MM/yyyy") · @project.TaskCount tarea(s)</p>
+                    <div class="d-flex gap-2">
+                        <a asp-action="Details" asp-route-id="@project.ProjectId" class="btn-brand-secondary btn-sm">Detalle</a>
+                        <a asp-controller="Tasks" asp-action="Board" asp-route-projectId="@project.ProjectId" class="btn-brand-primary btn-sm">Tablero</a>
+                    </div>
+                </article>
+            </div>
+        }
+    </div>
+}

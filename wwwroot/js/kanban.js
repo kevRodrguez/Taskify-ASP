@@ -111,9 +111,21 @@
                 var taskItemId = card.getAttribute("data-task-id");
                 var status = evt.to.getAttribute("data-status");
                 var sortOrder = evt.newIndex;
-                postStatus(taskItemId, status, sortOrder).catch(function () {
-                    window.location.reload();
-                });
+                postStatus(taskItemId, status, sortOrder)
+                    .then(function (res) {
+                        if (!res.ok) {
+                            throw new Error("update-failed");
+                        }
+                        return res.json();
+                    })
+                    .then(function (data) {
+                        if (data && data.toast && window.showToast) {
+                            window.showToast(data.toast.message, data.toast.type);
+                        }
+                    })
+                    .catch(function () {
+                        window.location.reload();
+                    });
             }
         });
     });

@@ -637,3 +637,32 @@ a:not(.btn-brand-primary):not(.btn-brand-secondary):not(.btn-brand-danger):not(.
   color: var(--color-text-secondary);
   margin: 0 0 var(--space-xs);
 }
+
+/* ── Toasts ── */
+
+#app-toasts {
+  z-index: 1090;
+}
+
+.toast-brand {
+  min-width: 280px;
+  border-radius: var(--radius-input);
+  box-shadow: var(--shadow-md);
+  color: var(--color-text-primary);
+}
+
+.toast-brand--success {
+  background-color: var(--color-success-muted);
+  color: var(--color-success);
+}
+
+.toast-brand--error {
+  background-color: var(--color-danger-muted);
+  color: var(--color-danger);
+}
+
+.toast-brand--warning,
+.toast-brand--info {
+  background-color: var(--color-info-muted);
+  color: var(--color-info);
+}

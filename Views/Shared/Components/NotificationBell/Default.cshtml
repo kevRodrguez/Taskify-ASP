@@ -1,0 +1,8 @@
+@model int
+<a class="nav-link position-relative" asp-controller="Notifications" asp-action="Index" title="Notificaciones">
+    Avisos
+    @if (Model > 0)
+    {
+        <span class="notification-badge">@(Model > 9 ? "9+" : Model.ToString())</span>
+    }
+</a>

@@ -105,6 +105,11 @@ public class TasksController : Controller
             await _notifications.NotifyTaskAssignedAsync(task, profileId.Value);
         }
 
+        if (task.Status == TaskItemStatus.Done)
+        {
+            SetEmailToast(await _notifications.NotifyTaskCompletedAsync(task));
+        }
+
         TempData["StatusMessage"] = "Tarea creada.";
         return RedirectToAction(nameof(Board), new { projectId });
     }
@@ -157,18 +162,32 @@ public class TasksController : Controller
         }
 
         var previousAssignee = task.AssignedToProfileId;
+        var previousStatus = task.Status;
         if (!await _tasks.UpdateAsync(id, model))
         {
             return NotFound();
         }
 
-        if (model.AssignedToProfileId.HasValue && model.AssignedToProfileId != previousAssignee)
+        var becameDone = model.Status == TaskItemStatus.Done && previousStatus != TaskItemStatus.Done;
+        var assigneeChanged = model.AssignedToProfileId.HasValue && model.AssignedToProfileId != previousAssignee;
+        if (becameDone || assigneeChanged)
         {
             var updated = await _tasks.GetAsync(id);
-            var actor = await _currentUser.GetProfileIdAsync();
-            if (updated is not null && actor.HasValue)
+            if (updated is not null)
             {
-                await _notifications.NotifyTaskAssignedAsync(updated, actor.Value);
+                if (assigneeChanged)
+                {
+                    var actor = await _currentUser.GetProfileIdAsync();
+                    if (actor.HasValue)
+                    {
+                        await _notifications.NotifyTaskAssignedAsync(updated, actor.Value);
+                    }
+                }
+
+                if (becameDone)
+                {
+                    SetEmailToast(await _notifications.NotifyTaskCompletedAsync(updated));
+                }
             }
         }
 
@@ -219,27 +238,47 @@ public class TasksController : Controller
             return BadRequest(ModelState);
         }
 
-        var task = await _tasks.UpdateStatusAsync(model.TaskItemId, model.Status, model.SortOrder);
-        if (task is null || task.ProjectId != projectId)
+        var existing = await _tasks.GetAsync(model.TaskItemId);
+        if (existing is null || existing.ProjectId != projectId)
         {
             return NotFound();
         }
 
+        var previousStatus = existing.Status;
+        var updated = await _tasks.UpdateStatusAsync(model.TaskItemId, model.Status, model.SortOrder);
+        if (updated is null || updated.ProjectId != projectId)
+        {
+            return NotFound();
+        }
+
+        object? toast = null;
+        if (updated.Status == TaskItemStatus.Done && previousStatus != TaskItemStatus.Done)
+        {
+            var email = await _notifications.NotifyTaskCompletedAsync(updated);
+            toast = new { message = email.ToastMessage, type = email.ToastType };
+        }
+
         var payload = new TaskBoardEvent
         {
-            TaskItemId = task.TaskItemId,
-            ProjectId = task.ProjectId,
-            Status = task.Status,
-            SortOrder = task.SortOrder,
-            Title = task.Title,
-            Description = task.Description,
-            AssignedToName = task.AssignedTo?.FullName,
-            DueDate = task.DueDate,
+            TaskItemId = updated.TaskItemId,
+            ProjectId = updated.ProjectId,
+            Status = updated.Status,
+            SortOrder = updated.SortOrder,
+            Title = updated.Title,
+            Description = updated.Description,
+            AssignedToName = updated.AssignedTo?.FullName,
+            DueDate = updated.DueDate,
             ClientRequestId = model.ClientRequestId
         };
 
         await BroadcastAsync(payload);
-        return Json(payload);
+        return Json(new { toast });
+    }
+
+    private void SetEmailToast(EmailDispatchResult result)
+    {
+        TempData["ToastMessage"] = result.ToastMessage;
+        TempData["ToastType"] = result.ToastType;
     }
 
     private async Task BroadcastAsync(TaskBoardEvent payload)

@@ -35,15 +35,28 @@ public sealed class SmtpEmailSender : IEmailSender
         message.Body = new BodyBuilder { HtmlBody = htmlBody }.ToMessageBody();
 
         using var client = new SmtpClient();
-        var socket = _settings.UseSsl ? SecureSocketOptions.StartTls : SecureSocketOptions.None;
-        await client.ConnectAsync(_settings.SmtpHost, _settings.SmtpPort, socket, cancellationToken);
+        client.Timeout = 20_000;
+        // macOS/.NET often fails Gmail's CRL/OCSP check ("incomplete certificate revocation check").
+        client.CheckCertificateRevocation = false;
+        await client.ConnectAsync(_settings.SmtpHost, _settings.SmtpPort, ResolveSocketOptions(), cancellationToken);
 
         if (!string.IsNullOrWhiteSpace(_settings.User))
         {
-            await client.AuthenticateAsync(_settings.User, _settings.Password, cancellationToken);
+            var password = _settings.Password.Replace(" ", string.Empty);
+            await client.AuthenticateAsync(_settings.User, password, cancellationToken);
         }
 
         await client.SendAsync(message, cancellationToken);
         await client.DisconnectAsync(true, cancellationToken);
+    }
+
+    private SecureSocketOptions ResolveSocketOptions()
+    {
+        if (_settings.SmtpPort == 465)
+        {
+            return SecureSocketOptions.SslOnConnect;
+        }
+
+        return _settings.UseSsl ? SecureSocketOptions.StartTls : SecureSocketOptions.None;
     }
 }

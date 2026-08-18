@@ -109,6 +109,7 @@ public sealed class TaskService : ITaskService
     {
         var task = await _db.TaskItems
             .Include(t => t.AssignedTo)
+            .Include(t => t.Project)
             .FirstOrDefaultAsync(t => t.TaskItemId == taskItemId, cancellationToken);
         if (task is null)
         {

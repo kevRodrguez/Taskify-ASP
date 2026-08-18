@@ -57,6 +57,11 @@
     </main>
 </div>
 
+<div id="app-toasts"
+     class="toast-container position-fixed top-0 end-0 p-3"
+     data-initial-message="@(TempData["ToastMessage"] as string)"
+     data-initial-type="@(TempData["ToastType"] as string ?? "info")"></div>
+
 <footer class="brand-footer">
     <div class="container brand-container">
         &copy; 2026 Taskify &mdash; Gestor de tareas y proyectos

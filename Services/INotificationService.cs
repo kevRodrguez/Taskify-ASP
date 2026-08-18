@@ -6,6 +6,8 @@ public interface INotificationService
 {
     Task NotifyTaskAssignedAsync(TaskItem task, Guid actorProfileId, CancellationToken cancellationToken = default);
 
+    Task<EmailDispatchResult> NotifyTaskCompletedAsync(TaskItem task, CancellationToken cancellationToken = default);
+
     Task NotifyProjectCompletedAsync(Project project, CancellationToken cancellationToken = default);
 
     Task NotifyTaskDueSoonAsync(TaskItem task, CancellationToken cancellationToken = default);

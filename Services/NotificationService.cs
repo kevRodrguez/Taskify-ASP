@@ -50,6 +50,69 @@ public sealed class NotificationService : INotificationService
             cancellationToken);
     }
 
+    public async Task<EmailDispatchResult> NotifyTaskCompletedAsync(TaskItem task, CancellationToken cancellationToken = default)
+    {
+        var project = task.Project
+            ?? await _db.Projects.FirstOrDefaultAsync(p => p.ProjectId == task.ProjectId, cancellationToken);
+        if (project is null)
+        {
+            return new EmailDispatchResult { SmtpConfigured = _email.IsConfigured };
+        }
+
+        var recipients = await _db.TeamMembers
+            .Where(m => m.TeamId == project.TeamId)
+            .Select(m => m.Profile)
+            .ToListAsync(cancellationToken);
+
+        if (task.AssignedToProfileId is Guid assigneeId
+            && recipients.All(p => p.ProfileId != assigneeId))
+        {
+            var assignee = task.AssignedTo
+                ?? await _db.Profiles.FirstOrDefaultAsync(p => p.ProfileId == assigneeId, cancellationToken);
+            if (assignee is not null)
+            {
+                recipients.Add(assignee);
+            }
+        }
+
+        recipients = recipients
+            .Where(p => p is not null)
+            .DistinctBy(p => p.ProfileId)
+            .ToList();
+
+        var message = $"La tarea «{task.Title}» se marcó como finalizada en {project.Name}.";
+        var sent = 0;
+        var failed = 0;
+
+        foreach (var member in recipients)
+        {
+            await SaveInAppAsync(member.ProfileId, task.TaskItemId, message, cancellationToken);
+            var outcome = await TrySendAsync(
+                member.Email,
+                $"Tarea finalizada: {task.Title}",
+                Wrap($"<p>Hola {System.Net.WebUtility.HtmlEncode(member.FullName)},</p>" +
+                     $"<p>La tarea <strong>{System.Net.WebUtility.HtmlEncode(task.Title)}</strong> del proyecto <strong>{System.Net.WebUtility.HtmlEncode(project.Name)}</strong> se marcó como finalizada.</p>"),
+                cancellationToken);
+
+            if (outcome == EmailSendOutcome.Sent)
+            {
+                sent++;
+            }
+            else if (outcome == EmailSendOutcome.Failed)
+            {
+                failed++;
+            }
+        }
+
+        return new EmailDispatchResult
+        {
+            RecipientCount = recipients.Count,
+            Sent = sent,
+            Failed = failed,
+            SmtpConfigured = _email.IsConfigured
+        };
+    }
+
     public async Task NotifyProjectCompletedAsync(Project project, CancellationToken cancellationToken = default)
     {
         var members = await _db.TeamMembers
@@ -145,15 +208,29 @@ public sealed class NotificationService : INotificationService
         await _db.SaveChangesAsync(cancellationToken);
     }
 
-    private async Task TrySendAsync(string to, string subject, string html, CancellationToken cancellationToken)
+    private enum EmailSendOutcome
     {
+        Sent,
+        Failed,
+        Skipped
+    }
+
+    private async Task<EmailSendOutcome> TrySendAsync(string to, string subject, string html, CancellationToken cancellationToken)
+    {
+        if (!_email.IsConfigured)
+        {
+            return EmailSendOutcome.Skipped;
+        }
+
         try
         {
             await _email.SendAsync(to, subject, html, cancellationToken);
+            return EmailSendOutcome.Sent;
         }
         catch (Exception ex)
         {
             _logger.LogWarning(ex, "No se pudo enviar el correo '{Subject}' a {To}.", subject, to);
+            return EmailSendOutcome.Failed;
         }
     }
 

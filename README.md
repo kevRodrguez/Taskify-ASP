@@ -169,7 +169,7 @@ Al desplegar con un dominio real hay que actualizar el `Site URL` del dashboard 
 ## Correos de dominio (tareas y proyectos)
 
 Los correos de **registro y recuperación** siguen saliendo por Supabase. Los avisos de
-asignación, vencimiento y proyecto finalizado los envía la app con SMTP (MailKit).
+asignación, tarea finalizada, vencimiento y proyecto finalizado los envía la app con SMTP (MailKit).
 
 Si SMTP no está configurado, la app **no falla**: escribe la notificación in-app y omite el correo.
 
